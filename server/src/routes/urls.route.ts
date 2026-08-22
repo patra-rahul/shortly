@@ -28,8 +28,4 @@ urlRouter.patch('/urls/:id', urlController.updateUrl);
  */
 urlRouter.delete('/urls/:id', urlController.deleteUrl);
 
-/**
- * REDIRECT TO ORIGINAL URL
- */
-urlRouter.get('/:id', urlController.redirectUrl);
 export default urlRouter;

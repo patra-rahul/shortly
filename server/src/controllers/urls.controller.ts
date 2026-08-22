@@ -1,32 +1,13 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { generateShortCode } from "../utils/generateShortCode";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 
 export async function urls(req: Request, res: Response) {
   try {
     const { shortUrl, originalUrl } = req.body;
 
-    if (shortUrl) {
-      const url = await prisma.url.create({
-        data: {
-          id: shortUrl,
-          shortUrl: shortUrl,
-          originalUrl: originalUrl,
-        },
-      });
-
-      if (!url) {
-        return res.status(400).json({
-          msg: "Short Code or the Original Url Already Exists",
-        });
-      }
-      return res.status(200).json({
-        message: "Short Url Generated Successfully",
-        data: url,
-      });
-    }
-
-    const code = generateShortCode();
+    const code = shortUrl ?? generateShortCode();
     const url = await prisma.url.create({
       data: {
         id: code,
@@ -34,20 +15,49 @@ export async function urls(req: Request, res: Response) {
         originalUrl: originalUrl,
       },
     });
-    if (!url) {
-      return res.status(400).json({
-        message: "The original Url already exists",
-      });
-    }
-    res.status(200).json({
+    res.status(201).json({
       message: "Short Url Generated Successfully",
       data: url,
     });
   } catch (e) {
-    res.status(400).json({
-      msg: "Failed to do so",
-      error: e,
-    });
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        type UniqueConstraintMeta = {
+          driverAdapterError?: {
+            cause?: {
+              constraint?: {
+                fields?: string;
+              };
+            };
+          };
+        };
+        const meta = e.meta as UniqueConstraintMeta;
+        const field = meta.driverAdapterError?.cause?.constraint?.fields?.[0];
+        const normalizedField = field?.replaceAll('""', "");
+        if (normalizedField?.includes("originalUrl")) {
+          return res.status(409).json({
+            error: {
+              code: "ORIGINAL_URL_EXISTS",
+              message: "This URL has already been shortened.",
+            },
+          });
+        } else if (field?.includes("shortUrl")) {
+          return res.status(409).json({
+            error: {
+              code: "SHORT_URL_EXISTS",
+              message: "This URL has already been shortened.",
+            },
+          });
+        }
+        return res.status(500).json({
+          e: e.meta,
+          error: {
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong.",
+          },
+        });
+      }
+    }
   }
 }
 
@@ -61,13 +71,23 @@ export async function getUrl(req: Request, res: Response) {
       },
     });
 
+    if (!url) {
+      return res.status(409).json({
+        error: {
+          code: "URL_DOES_NOT_EXIST",
+          message: "No Such URL shortened yet",
+        },
+      });
+    }
     res.status(200).json({
       url,
     });
   } catch (e) {
-    res.status(400).json({
-      msg: "Failed to do so",
-      error: e,
+    res.status(500).json({
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something Went Wrong",
+      },
     });
   }
 }
@@ -99,9 +119,11 @@ export async function getUrls(req: Request, res: Response) {
 
     res.status(200).json(nextPage);
   } catch (e) {
-    res.status(400).json({
-      msg: "Failed to do so",
-      error: e,
+    res.status(500).json({
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something Went Wrong",
+      },
     });
   }
 }
@@ -118,8 +140,11 @@ export async function updateUrl(req: Request, res: Response) {
     });
 
     if (oldUrl?.originalUrl == newUrl) {
-      return res.status(400).json({
-        msg: "You cannot update original url with the same content...",
+      return res.status(401).json({
+        error: {
+          code: "URL_ALREADY_EXISTS",
+          message: "The new URL is same as the original URL"
+        }
       });
     }
     const url = await prisma.url.update({
@@ -131,11 +156,13 @@ export async function updateUrl(req: Request, res: Response) {
       },
     });
 
-    res.status(200).json(url);
+    res.status(201).json(url);
   } catch (e) {
-    res.status(400).json({
-      msg: "Failed to do so",
-      error: e,
+    res.status(500).json({
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something Went Wrong",
+      },
     });
   }
 }
@@ -153,9 +180,11 @@ export async function deleteUrl(req: Request, res: Response) {
       msg: `Deleted url with id: ${url.id} successfully...`,
     });
   } catch (e) {
-    res.status(400).json({
-      msg: "Failed to do so",
-      error: e,
+    res.status(500).json({
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something Went Wrong",
+      },
     });
   }
 }
