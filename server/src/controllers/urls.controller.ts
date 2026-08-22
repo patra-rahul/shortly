@@ -6,7 +6,6 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 export async function urls(req: Request, res: Response) {
   try {
     const { shortUrl, originalUrl } = req.body;
-
     const code = shortUrl ?? generateShortCode();
     const url = await prisma.url.create({
       data: {
