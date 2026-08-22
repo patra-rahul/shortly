@@ -1,9 +1,17 @@
 import express, { type Express, type Request, type Response } from "express";
+import urlRouter from "./routes/urls.route";
 
 const app: Express = express();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
+app.use(express.json());
+app.use(express.urlencoded());
 
-app.listen(3000);
+
+/**
+ * POST api/v1/urls
+ */
+app.use('/api/v1', urlRouter);
+
+app.listen(3000, () => {
+  console.log("Listening on port http://localhost:3000");
+});
