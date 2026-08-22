@@ -45,12 +45,40 @@ export async function urls(req: Request, res: Response) {
     });
   } catch (e) {
     res.status(400).json({
-        msg: "Failed to do so",
-        error: e
-    })
+      msg: "Failed to do so",
+      error: e,
+    });
   }
 }
 
 export async function getUrl(req: Request, res: Response) {
-  const id = Number(req.params.id);
+  try {
+    const id = String(req.params.id);
+
+    const url = await prisma.url.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    res.status(200).json({
+      url,
+    });
+  } catch (e) {
+    res.status(400).json({
+      msg: "Failed to do so",
+      error: e,
+    });
+  }
+}
+
+export async function getUrls(req: Request, res: Response) {
+  try {
+    
+  } catch (e) {
+    res.status(400).json({
+      msg: "Failed to do so",
+      error: e,
+    });
+  }
 }
