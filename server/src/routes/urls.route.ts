@@ -8,4 +8,9 @@ const urlRouter = Router();
  */
 urlRouter.post("/urls", urlController.urls);
 
+/**
+ * GET /api/v1/urls/:id --> to get an already created shortUrl
+ */
+urlRouter.get('/urls/:id', urlController.getUrl);
+
 export default urlRouter;

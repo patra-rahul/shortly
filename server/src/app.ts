@@ -8,7 +8,7 @@ app.use(express.urlencoded());
 
 
 /**
- * POST api/v1/urls
+ * Core Product API
  */
 app.use('/api/v1', urlRouter);
 
