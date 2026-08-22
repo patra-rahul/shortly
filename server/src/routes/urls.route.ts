@@ -23,4 +23,13 @@ urlRouter.get('/urls', urlController.getUrls);
  */
 urlRouter.patch('/urls/:id', urlController.updateUrl);
 
+/**
+ * DELETE /api/v1/urls/:id --> to delete any exisiting url
+ */
+urlRouter.delete('/urls/:id', urlController.deleteUrl);
+
+/**
+ * REDIRECT TO ORIGINAL URL
+ */
+urlRouter.get('/:id', urlController.redirectUrl);
 export default urlRouter;

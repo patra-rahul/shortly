@@ -112,31 +112,66 @@ export async function updateUrl(req: Request, res: Response) {
     const { newUrl } = req.body;
 
     const oldUrl = await prisma.url.findUnique({
-        where: {
-            id
-        }
-    })
+      where: {
+        id,
+      },
+    });
 
-    if(oldUrl?.originalUrl == newUrl){
-        return res.status(400).json({
-            msg: 'You cannot update original url with the same content...'
-        })
+    if (oldUrl?.originalUrl == newUrl) {
+      return res.status(400).json({
+        msg: "You cannot update original url with the same content...",
+      });
     }
     const url = await prisma.url.update({
-        where: {
-            id
-        }, 
-        data:{
-            originalUrl: newUrl
-        }
-    })
+      where: {
+        id,
+      },
+      data: {
+        originalUrl: newUrl,
+      },
+    });
 
     res.status(200).json(url);
-
   } catch (e) {
     res.status(400).json({
       msg: "Failed to do so",
       error: e,
     });
   }
+}
+
+export async function deleteUrl(req: Request, res: Response) {
+  try {
+    const id = String(req.params.id);
+
+    const url = await prisma.url.delete({
+      where: {
+        id,
+      },
+    });
+    res.status(200).json({
+      msg: `Deleted url with id: ${url.id} successfully...`,
+    });
+  } catch (e) {
+    res.status(400).json({
+      msg: "Failed to do so",
+      error: e,
+    });
+  }
+}
+
+export async function redirectUrl(req: Request, res: Response) {
+  const id = String(req.params.id);
+
+  const url = await prisma.url.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!url) {
+    return res.status(404);
+  }
+
+  res.redirect(url.originalUrl);
 }
