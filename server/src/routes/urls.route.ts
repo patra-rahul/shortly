@@ -13,4 +13,9 @@ urlRouter.post("/urls", urlController.urls);
  */
 urlRouter.get('/urls/:id', urlController.getUrl);
 
+/**
+ * GET /api/v1/urls --> to get all urls with pagination feature
+ */
+urlRouter.get('/urls', urlController.getUrls);
+
 export default urlRouter;

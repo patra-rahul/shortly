@@ -74,7 +74,30 @@ export async function getUrl(req: Request, res: Response) {
 
 export async function getUrls(req: Request, res: Response) {
   try {
-    
+    const { cursor, limit } = req.query;
+
+    const firstPage = await prisma.url.findMany({
+      take: Number(limit) || 10,
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    const lastUrl = firstPage[firstPage.length - 1];
+
+    const nextPage = lastUrl
+      ? await prisma.url.findMany({
+          take: Number(limit) || 10,
+          cursor: {
+            id: String(cursor),
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        })
+      : [];
+
+    res.status(200).json(nextPage);
   } catch (e) {
     res.status(400).json({
       msg: "Failed to do so",
