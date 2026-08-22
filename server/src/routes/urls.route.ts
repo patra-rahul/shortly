@@ -18,4 +18,9 @@ urlRouter.get('/urls/:id', urlController.getUrl);
  */
 urlRouter.get('/urls', urlController.getUrls);
 
+/**
+ * PATCH /api/v1/urls/:id --> to update existing url
+ */
+urlRouter.patch('/urls/:id', urlController.updateUrl);
+
 export default urlRouter;

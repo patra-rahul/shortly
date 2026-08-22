@@ -105,3 +105,38 @@ export async function getUrls(req: Request, res: Response) {
     });
   }
 }
+
+export async function updateUrl(req: Request, res: Response) {
+  try {
+    const id = String(req.params.id);
+    const { newUrl } = req.body;
+
+    const oldUrl = await prisma.url.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if(oldUrl?.originalUrl == newUrl){
+        return res.status(400).json({
+            msg: 'You cannot update original url with the same content...'
+        })
+    }
+    const url = await prisma.url.update({
+        where: {
+            id
+        }, 
+        data:{
+            originalUrl: newUrl
+        }
+    })
+
+    res.status(200).json(url);
+
+  } catch (e) {
+    res.status(400).json({
+      msg: "Failed to do so",
+      error: e,
+    });
+  }
+}
