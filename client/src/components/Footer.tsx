@@ -2,7 +2,7 @@ import linkedin from "../assets/icons/linkedin.svg";
 import github from "../assets/icons/github.svg";
 import website from "../assets/icons/website.svg";
 
-const Info = () => {
+const Footer = () => {
   return (
     <>
       <div className="flex px-20 py-10 items-center justify-between p-4 bg-blue-700 text-white font-secondary">
@@ -43,4 +43,4 @@ const Info = () => {
   );
 };
 
-export default Info;
+export default Footer;
