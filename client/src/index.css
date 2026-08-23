@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "InstrumentSerif-Regular";
+  src: url("../src/assets/fonts/InstrumentSerif-Regular.ttf") format(truetype);
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "InstrumentSerif-Italic";
+  src: url("../src/assets/fonts/InstrumentSerif-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "InstrumentSans-Regular";
+  src: url("../src/assets/fonts/InstrumentSans-VariableFont_wdth\,wght.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: "InstrumentSans-Italic";
+    src: url("../src/assets/fonts/InstrumentSans-Italic-VariableFont_wdth\,wght.ttf");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@theme {
+  --font-primary: "InstrumentSerif-Regular";
+  --font-primary-italic: "InstrumentSerif-Italic";
+  --font-secondary: "InstrumentSans-Regular";
+  --font-secondary-italic: "InstrumentSans-Italic";
+}
