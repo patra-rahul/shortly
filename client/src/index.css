@@ -34,3 +34,7 @@
   --font-secondary: "InstrumentSans-Regular";
   --font-secondary-italic: "InstrumentSans-Italic";
 }
+
+*{
+  scroll-behavior: smooth;
+}
