@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react"
-import Footer from "../components/Footer"
-import Navbar from "../components/Navbar"
-import axios from "axios"
-import Home from "./Home"
-import CreateUrl from "../components/CreateUrl"
+import { useState, useEffect } from "react";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import axios from "axios";
+import Home from "./Home";
+import CreateUrl from "../components/CreateUrl";
+import ShowUrls from "../components/ShowUrls";
 
 type User = {
   name: String;
   email: String;
-}
+};
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -34,23 +35,22 @@ const Dashboard = () => {
     loadUser();
   }, []);
 
-  if(loading){
-    return <div>Loading...</div>
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  if(!user){
-    return <Home />
+  if (!user) {
+    return <Home />;
   }
-  
+
   return (
     <>
-    <Navbar loginBtn={false} registerBtn={false} logoutBtn={true}/>
-    <CreateUrl />
-    <div className="absolute bottom-0 w-full">
-    <Footer />
-    </div>
+      <Navbar loginBtn={false} registerBtn={false} logoutBtn={true} />
+      <CreateUrl />
+      <ShowUrls />
+        <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

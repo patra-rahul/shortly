@@ -100,12 +100,15 @@ export async function getUrl(req: Request, res: Response) {
   }
 }
 
-export async function getUrls(req: Request, res: Response) {
+export async function getUrls(req: AuthenticatedRequest, res: Response) {
   try {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
 
     const urls = await prisma.url.findMany({
+      where: {
+        userId: req.currentUser?.id
+      },
       skip: page * limit,
       take: limit || 10,
     });
@@ -118,7 +121,6 @@ export async function getUrls(req: Request, res: Response) {
         },
       });
     }
-    console.log(urls);
     return res.status(200).json({ urls });
   } catch (e) {
     res.status(500).json({

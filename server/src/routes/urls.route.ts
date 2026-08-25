@@ -21,7 +21,7 @@ urlRouter.get("/urls/:id", urlController.getUrl);
 /**
  * GET /api/v1/urls --> to get all urls with pagination feature
  */
-urlRouter.get("/urls", urlController.getUrls);
+urlRouter.get("/urls", requireAuth, urlController.getUrls);
 
 /**
  * PATCH /api/v1/urls/:id --> to update existing url
