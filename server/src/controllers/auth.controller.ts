@@ -115,7 +115,7 @@ export async function googleCallback(req: Request, res: Response) {
       });
     }
 
-    // Find/ Create user account
+    // Find / Create user account
     const account = await prisma.account.findUnique({
       where: {
         provider_providerAccountId: {
@@ -150,9 +150,32 @@ export async function googleCallback(req: Request, res: Response) {
     res.clearCookie("oauth_state");
     res.clearCookie("oauth_code_verifier");
 
-    return res.json({
-      msg: "You've been registered successfully on Shortly....",
+    // create Session:
+    const sessionToken = crypto.randomBytes(32).toString("hex");
+
+    const sessionTokenHash = crypto
+      .createHash("sha256")
+      .update(sessionToken)
+      .digest("hex");
+
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30 days
+
+    await prisma.session.create({
+      data: {
+        tokenHash: sessionTokenHash,
+        userId: user.id,
+        expiresAt,
+      },
     });
+
+    res.cookie("session", sessionToken, {
+      httpOnly: true, // hides from the client side, only server side allowed
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
   } catch (err) {
     console.error("Google OAuthError: ", err);
     return res.status(500).json({
