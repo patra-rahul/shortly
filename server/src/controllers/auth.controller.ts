@@ -212,7 +212,25 @@ export async function logout(req: Request, res: Response) {
       },
     });
   }
-  
+
   res.clearCookie("session");
   res.redirect(`${process.env.FRONTEND_URL}`);
+}
+
+export async function getMe(req: Request, res: Response) {
+  const token = req.cookies.session;
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+  const session = await prisma.session.findUnique({
+    where:{
+      tokenHash
+    },
+    include: {
+      user: true
+    }
+  })
+  if (session) {
+    return res.send(session.user);
+  }
+  return res.send(false);
 }

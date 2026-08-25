@@ -9,7 +9,8 @@ import appRouter from "./routes/app.route";
 const app: Express = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -18,6 +19,7 @@ app.use(cookieParser());
 /**
  * Core Product API
  */
+
 app.use("/api/v1", urlRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/app", appRouter)

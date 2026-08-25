@@ -93,30 +93,24 @@ export async function getUrl(req: Request, res: Response) {
 
 export async function getUrls(req: Request, res: Response) {
   try {
-    const { cursor, limit } = req.query;
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
 
-    const firstPage = await prisma.url.findMany({
-      take: Number(limit) || 10,
-      orderBy: {
-        createdAt: "asc",
-      },
+    const urls = await prisma.url.findMany({
+      skip: page * limit,
+      take: limit || 10,
     });
 
-    const lastUrl = firstPage[firstPage.length - 1];
-
-    const nextPage = lastUrl
-      ? await prisma.url.findMany({
-          take: Number(limit) || 10,
-          cursor: {
-            id: String(cursor),
-          },
-          orderBy: {
-            createdAt: "asc",
-          },
-        })
-      : [];
-
-    res.status(200).json(nextPage);
+    if (!urls) {
+      return res.status(401).json({
+        error: {
+          code: "URLS_NOT_FOUND",
+          message: "There are no urls in the database",
+        },
+      });
+    }
+    console.log(urls);
+    return res.status(200).json({urls});
   } catch (e) {
     res.status(500).json({
       error: {
@@ -203,4 +197,3 @@ export async function redirectUrl(req: Request, res: Response) {
 
   res.redirect(url.originalUrl);
 }
-

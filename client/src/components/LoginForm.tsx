@@ -36,7 +36,10 @@ const Login = () => {
           <p className="flex justify-center font-secondary text-gray-600">or</p>
 
           {/* Login using Google Account */}
-          <a href="/api/v1/auth/google" className="flex justify-center text-white bg-red-600 font-secondary px-4 py-2 m-2 rounded-md">
+          <a
+            href="http://localhost:3000/api/v1/auth/google"
+            className="flex justify-center text-white bg-red-600 font-secondary px-4 py-2 m-2 rounded-md"
+          >
             Continue with Google
           </a>
         </form>

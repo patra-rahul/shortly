@@ -2,8 +2,20 @@ import { type Request, type Response, type NextFunction } from "express";
 import crypto from "node:crypto";
 import { prisma } from "../../lib/prisma";
 
+export interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AuthenticatedRequest extends Request {
+  currentUser?: User;
+}
+
 export async function requireAuth(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ) {
@@ -55,6 +67,6 @@ export async function requireAuth(
       },
     });
   }
-
+  req.currentUser = session.user;
   next();
 }
