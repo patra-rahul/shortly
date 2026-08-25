@@ -5,7 +5,7 @@ import website from "../assets/icons/website.svg";
 const Footer = () => {
   return (
     <>
-      <div className="flex px-20 py-10 items-center justify-between p-4 bg-blue-700 text-white font-secondary">
+      <div className="flex px-20 py-10 items-center justify-between p-4 bg-blue-700 text-white font-secondary ">
         <p>Made by Rahul Patra</p>
         <div className="flex gap-x-8">
           <a

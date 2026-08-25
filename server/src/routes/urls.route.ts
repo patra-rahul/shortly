@@ -3,6 +3,7 @@ import * as urlController from "../controllers/urls.controller";
 
 import { validateUrl } from "../middlewares/validate.middleware";
 import { createUrlSchema } from "../utils/createUrlSchema";
+import { requireAuth } from "../middlewares/authorization.middleware";
 
 const urlRouter = Router();
 
@@ -10,7 +11,7 @@ const urlRouter = Router();
  * POST /api/v1/urls --> to create a new url from originalUrl
  */
 
-urlRouter.post("/urls", validateUrl(createUrlSchema), urlController.urls);
+urlRouter.post("/urls", requireAuth, urlController.urls);
 
 /**
  * GET /api/v1/urls/:id --> to get an already created shortUrl

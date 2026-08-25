@@ -9,7 +9,7 @@ type Prop = {
 const Navbar = (prop: Prop) => {
   return (
     <>
-      <div className="flex justify-between p-4 items-center bg-blue-700 text-white sticky top-0 z-50 scro">
+      <div className="flex justify-between p-4 items-center bg-blue-700 text-white sticky top-0 z-50">
         <div className="font-primary-italic text-4xl ml-10">
           <Link to="/">Shortly</Link>
         </div>

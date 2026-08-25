@@ -2,9 +2,13 @@ import { type Request, type Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { generateShortCode } from "../utils/generateShortCode";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { AuthenticatedRequest } from "../middlewares/authorization.middleware";
+import dotenv from "dotenv";
+dotenv.config;
 
-export async function urls(req: Request, res: Response) {
+export async function urls(req: AuthenticatedRequest, res: Response) {
   try {
+    const user = req.currentUser;
     const { shortUrl, originalUrl } = req.body;
     const code = shortUrl ?? generateShortCode();
     const url = await prisma.url.create({
@@ -12,12 +16,17 @@ export async function urls(req: Request, res: Response) {
         id: code,
         shortUrl: code,
         originalUrl: originalUrl,
+        user:{
+          connect:{
+            id: user?.id
+          }
+        }
+      },
+      include: {
+        user: true,
       },
     });
-    res.status(201).json({
-      message: "Short Url Generated Successfully",
-      data: url,
-    });
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -110,7 +119,7 @@ export async function getUrls(req: Request, res: Response) {
       });
     }
     console.log(urls);
-    return res.status(200).json({urls});
+    return res.status(200).json({ urls });
   } catch (e) {
     res.status(500).json({
       error: {

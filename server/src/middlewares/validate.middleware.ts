@@ -16,7 +16,6 @@ export function validateUrl(schema: ZodType) {
     }
 
     req.body = result.data;
-
     next();
   };
 }

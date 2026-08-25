@@ -1,8 +1,9 @@
-import { useState, useEffect, use } from "react"
+import { useState, useEffect } from "react"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
 import axios from "axios"
 import Home from "./Home"
+import CreateUrl from "../components/CreateUrl"
 
 type User = {
   name: String;
@@ -44,8 +45,10 @@ const Dashboard = () => {
   return (
     <>
     <Navbar loginBtn={false} registerBtn={false} logoutBtn={true}/>
-
+    <CreateUrl />
+    <div className="absolute bottom-0 w-full">
     <Footer />
+    </div>
     </>
   )
 }
