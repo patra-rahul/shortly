@@ -11,5 +11,6 @@ authRouter.post("/register", controller.register);
  */
 authRouter.get("/google", controller.google);
 authRouter.get("/google/callback", controller.googleCallback);
+authRouter.get("/logout", controller.logout);
 
 export default authRouter;

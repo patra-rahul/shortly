@@ -7,7 +7,7 @@ const Login = () => {
   return (
     <>
       <Background />
-      <Navbar />
+      <Navbar loginBtn={true} registerBtn={true} logoutBtn={false}/>
       <LoginForm />
       <Footer />
     </>

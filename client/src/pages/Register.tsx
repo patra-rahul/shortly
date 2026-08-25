@@ -7,7 +7,7 @@ const Register = () => {
   return (
     <>
       <Background />
-      <Navbar />
+      <Navbar loginBtn={true} registerBtn={true} logoutBtn={false}/>
       <RegisterForm />
       <Footer />
     </>

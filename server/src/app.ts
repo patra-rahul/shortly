@@ -4,6 +4,7 @@ import serviceRouter from "./services/url.service";
 import authRouter from "./routes/auth.route";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import appRouter from "./routes/app.route";
 
 const app: Express = express();
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
  */
 app.use("/api/v1", urlRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/app", appRouter)
 app.use(serviceRouter);
 
 app.listen(3000, () => {

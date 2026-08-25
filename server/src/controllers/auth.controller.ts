@@ -175,7 +175,7 @@ export async function googleCallback(req: Request, res: Response) {
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
-    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
+    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   } catch (err) {
     console.error("Google OAuthError: ", err);
     return res.status(500).json({
@@ -185,4 +185,34 @@ export async function googleCallback(req: Request, res: Response) {
       },
     });
   }
+}
+
+export async function logout(req: Request, res: Response) {
+  const sessionToken = req.cookies.session;
+
+  const sessionTokenHash = crypto
+    .createHash("sha256")
+    .update(sessionToken)
+    .digest("hex");
+
+  const session = await prisma.session.delete({
+    where: {
+      tokenHash: sessionTokenHash,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!session) {
+    return res.status(401).json({
+      error: {
+        code: "SESSION_NOT_FOUND",
+        message: "No such session found for this user",
+      },
+    });
+  }
+  
+  res.clearCookie("session");
+  res.redirect(`${process.env.FRONTEND_URL}`);
 }

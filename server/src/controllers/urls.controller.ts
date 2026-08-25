@@ -142,8 +142,8 @@ export async function updateUrl(req: Request, res: Response) {
       return res.status(401).json({
         error: {
           code: "URL_ALREADY_EXISTS",
-          message: "The new URL is same as the original URL"
-        }
+          message: "The new URL is same as the original URL",
+        },
       });
     }
     const url = await prisma.url.update({
@@ -203,3 +203,4 @@ export async function redirectUrl(req: Request, res: Response) {
 
   res.redirect(url.originalUrl);
 }
+
