@@ -16,11 +16,11 @@ export async function urls(req: AuthenticatedRequest, res: Response) {
         id: code,
         shortUrl: code,
         originalUrl: originalUrl,
-        user:{
-          connect:{
-            id: user?.id
-          }
-        }
+        user: {
+          connect: {
+            id: user?.id,
+          },
+        },
       },
       include: {
         user: true,
@@ -107,7 +107,7 @@ export async function getUrls(req: AuthenticatedRequest, res: Response) {
 
     const urls = await prisma.url.findMany({
       where: {
-        userId: req.currentUser?.id
+        userId: req.currentUser?.id,
       },
       skip: page * limit,
       take: limit || 10,
@@ -171,7 +171,7 @@ export async function updateUrl(req: Request, res: Response) {
   }
 }
 
-export async function deleteUrl(req: Request, res: Response) {
+export async function deleteUrl(req: AuthenticatedRequest, res: Response) {
   try {
     const id = String(req.params.id);
 
@@ -180,9 +180,7 @@ export async function deleteUrl(req: Request, res: Response) {
         id,
       },
     });
-    res.status(200).json({
-      msg: `Deleted url with id: ${url.id} successfully...`,
-    });
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
   } catch (e) {
     res.status(500).json({
       error: {

@@ -35,6 +35,6 @@ urlRouter.patch(
 /**
  * DELETE /api/v1/urls/:id --> to delete any exisiting url
  */
-urlRouter.delete("/urls/:id", urlController.deleteUrl);
+urlRouter.delete("/urls/:id", requireAuth, urlController.deleteUrl);
 
 export default urlRouter;

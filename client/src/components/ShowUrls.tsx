@@ -1,64 +1,79 @@
 import axios from "axios";
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
 type Item = {
-    id: string;
-    originalUrl: string;
-    shortUrl: string;
-}
+  id: string;
+  originalUrl: string;
+  shortUrl: string;
+};
 
 const ShowUrls = () => {
-    const [currentPage, setCurrentPage] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [urls, setUrls] = useState<Item[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [urls, setUrls] = useState<Item[]>([]);
 
-    useEffect(()=>{
-        async function getUrls(){
-            const response = await axios.get("http://localhost:3000/api/v1/urls", {
-                params: {
-                    page: currentPage,
-                    limit: itemsPerPage
-                },
-                withCredentials: true
-            })
-            const currentItems = response.data.urls;
-            setUrls(currentItems)
-        }
-        getUrls();
-    })
+  useEffect(() => {
+    async function getUrls() {
+      const response = await axios.get("http://localhost:3000/api/v1/urls", {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage,
+        },
+        withCredentials: true,
+      });
+      const currentItems = response.data.urls;
+      setUrls(currentItems);
+    }
+    getUrls();
+  }, [currentPage, itemsPerPage, urls]);
 
-    return (
-      <ul>
-        {urls.map((item: Item) => (
-          <div className="m-4 bg-gray-100 p-2 rounded-md flex items-center justify-between">
-            <div>
-              <li key={item.id}>
-                Original Url:
-                <span className="text-gray-500">{item.originalUrl}</span>
-              </li>
-              <li key={item.id}>
-                Short Url:
-                <a
-                  href={`http://localhost:3000/${item.shortUrl}`}
-                  target="_blank"
-                  className="bg-blue m-1 px-1 py-1/2 text-white bg-blue-700 rounded-sm"
-                >
-                  http://localhost:3000/{item.shortUrl}{" "}
-                </a>
-              </li>
-            </div>
-            <div className="flex gap-x-10">
-              <button className="bg-blue-700 text-white font-secondary px-4 py-2 rounded-sm">
-                Edit
-              </button>
-              <button className="bg-red-600 text-white font-secondary px-4 py-2 rounded-sm">
-                Delete
-              </button>
-            </div>
+  async function deleteUrl(id: string) {
+    try {
+      await axios.delete(`http://localhost:3000/api/v1/urls/${id}`, {
+        withCredentials: true,
+      });
+
+      setUrls((currentUrls) => currentUrls.filter((url) => url.id !== id));
+    } catch (err) {
+        console.error(err);
+    }
+  }
+
+  return (
+    <ul>
+      {urls.map((item: Item) => (
+        <div className="m-4 bg-gray-100 p-2 rounded-md flex items-center justify-between">
+          <div key={item.id}>
+            <li>
+              Original Url:
+              <span className="text-gray-500">{item.originalUrl}</span>
+            </li>
+            <li>
+              Short Url:
+              <a
+                href={`http://localhost:3000/${item.shortUrl}`}
+                target="_blank"
+                className="bg-blue m-1 px-1 py-1/2 text-white bg-blue-700 rounded-sm"
+              >
+                http://localhost:3000/{item.shortUrl}{" "}
+              </a>
+            </li>
           </div>
-        ))}
-      </ul>
-    );
-}
+          <div className="flex gap-x-10">
+            <button className="bg-blue-700 text-white font-secondary px-4 py-2 rounded-sm">
+              Edit
+            </button>
+            <button
+              className="bg-red-600 text-white font-secondary px-4 py-2 rounded-sm"
+              onClick={() => deleteUrl(item.id)}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ))}
+    </ul>
+  );
+};
 
-export default ShowUrls
+export default ShowUrls;
