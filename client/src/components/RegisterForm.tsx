@@ -13,7 +13,12 @@ const RegisterForm = () => {
           </h1>
 
           <label htmlFor="name">Full Name</label>
-          <input type="text" className="bg-white px-4 py-2 m-2 rounded-md" placeholder="Rahul Patra" required/>
+          <input
+            type="text"
+            className="bg-white px-4 py-2 m-2 rounded-md"
+            placeholder="Rahul Patra"
+            required
+          />
 
           <label htmlFor="email">Email</label>
           <input
@@ -26,7 +31,8 @@ const RegisterForm = () => {
           <input
             type="password"
             className="bg-white px-4 py-2 m-2 rounded-md"
-            required placeholder="password"
+            required
+            placeholder="password"
           />
 
           <button
@@ -35,10 +41,21 @@ const RegisterForm = () => {
           >
             Sign Up
           </button>
+          <p className="flex justify-center font-secondary text-gray-600">or</p>
+
+          {/* Register using Google Account */}
+          <a
+            href="http://localhost:3000/api/v1/auth/google"
+            className="flex justify-center text-white bg-red-600 font-secondary px-4 py-2 m-2 rounded-md"
+          >
+            Continue with Google
+          </a>
         </form>
         <span className="text-gray-500 mt-10">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-700">Login</Link>
+          <Link to="/login" className="text-blue-700">
+            Login
+          </Link>
         </span>
       </div>
     </>
