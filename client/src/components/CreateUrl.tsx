@@ -36,7 +36,11 @@ const CreateUrl = () => {
       </div>
 
       {dialog && (
-        <form className="flex flex-col bg-gray-100 w-full m-4 p-10 rounded-lg h-full font-secondary gap-y-5" action="http://localhost:3000/api/v1/urls" method="post">
+        <form
+          className="flex flex-col bg-gray-100 w-full m-4 p-10 rounded-lg h-full font-secondary gap-y-5"
+          action="http://localhost:3000/api/v1/urls"
+          method="post"
+        >
           <div>
             <h1 className="text-2xl font-extrabold">Shorten a long link</h1>
             <span className="font-secondary-italic"></span>
