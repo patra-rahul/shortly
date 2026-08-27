@@ -12,6 +12,10 @@ const ShowUrls = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [urls, setUrls] = useState<Item[]>([]);
 
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
+  const [editForm, setEditForm] = useState<string | null>(null);
+
   useEffect(() => {
     async function getUrls() {
       const response = await axios.get("http://localhost:3000/api/v1/urls", {
@@ -35,7 +39,7 @@ const ShowUrls = () => {
 
       setUrls((currentUrls) => currentUrls.filter((url) => url.id !== id));
     } catch (err) {
-        console.error(err);
+      console.error(err);
     }
   }
 
@@ -58,11 +62,78 @@ const ShowUrls = () => {
                 http://localhost:3000/{item.shortUrl}{" "}
               </a>
             </li>
+            {/** Edit Form */}
+            {editForm === item.id && (
+              <form
+                action={`http://localhost:3000/api/v1/urls/${item.id}`}
+                method="post"
+                className="flex flex-col bg-gray-100 w-full m-4 p-10 rounded-lg h-full font-secondary gap-y-5"
+              >
+                <div>
+                  <h1 className="text-2xl font-extrabold">
+                    Shorten a long link
+                  </h1>
+                  <span className="font-secondary-italic"></span>
+                </div>
+
+                <label htmlFor="">Paste your long link here...</label>
+                <div className="font-secondary-italic flex gap-x-5 m">
+                  <input
+                    type="url"
+                    className="px-4 py-2 bg-white text-black rounded-md w-2/3"
+                    placeholder="https://www.yourboringlonglink.com/pages"
+                    required
+                    name="newOriginalUrl"
+                    value={originalUrl}
+                    onChange={(e) => setOriginalUrl(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    className="px-4 py-2 bg-white text-black w-1/3 rounded-md"
+                    placeholder="suggest short url (optional)"
+                    name="newShortUrl"
+                    value={shortUrl}
+                    onChange={(e) => setShortUrl(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="bg-black text-white px-4 py-2 rounded-md w-1/3 font-secondary"
+                  >
+                    Auto Generate
+                  </button>
+                </div>
+                <button
+                  type="submit"
+                  className="w-fit px-4 py-2 bg-blue-700 rounded-md text-white"
+                >
+                  Update your short link
+                </button>
+              </form>
+            )}
+            {/** Edit Form */}
           </div>
           <div className="flex gap-x-10">
-            <button className="bg-blue-700 text-white font-secondary px-4 py-2 rounded-sm">
-              Edit
-            </button>
+            {editForm !== item.id && (
+              <button
+                className="bg-blue-700 text-white font-secondary px-4 py-2 rounded-sm"
+                onClick={() => {
+                  setEditForm(item.id);
+                  setShortUrl(item.shortUrl);
+                  setOriginalUrl(item.originalUrl);
+                }}
+              >
+                Edit
+              </button>
+            )}
+            {editForm === item.id && (
+              <button
+                className="bg-blue-700 text-white font-secondary px-4 py-2 rounded-sm"
+                onClick={() => setEditForm(null)}
+              >
+                Cancel
+              </button>
+            )}
+
             <button
               className="bg-red-600 text-white font-secondary px-4 py-2 rounded-sm"
               onClick={() => deleteUrl(item.id)}

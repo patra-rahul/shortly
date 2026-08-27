@@ -69,7 +69,7 @@ export async function urls(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function getUrl(req: Request, res: Response) {
+export async function getUrl(req: AuthenticatedRequest, res: Response) {
   try {
     const id = String(req.params.id);
 
@@ -87,9 +87,7 @@ export async function getUrl(req: Request, res: Response) {
         },
       });
     }
-    res.status(200).json({
-      url,
-    });
+    res.status(200).json({ url });
   } catch (e) {
     res.status(500).json({
       error: {
@@ -132,43 +130,28 @@ export async function getUrls(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function updateUrl(req: Request, res: Response) {
-  try {
-    const id = String(req.params.id);
-    const { newUrl } = req.body;
-
-    const oldUrl = await prisma.url.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (oldUrl?.originalUrl == newUrl) {
-      return res.status(401).json({
-        error: {
-          code: "URL_ALREADY_EXISTS",
-          message: "The new URL is same as the original URL",
+export async function updateUrl(req: AuthenticatedRequest, res: Response) {
+  const user = req.currentUser;
+  const id = String(req.params.id);
+  const { newShortUrl, newOriginalUrl } = req.body;
+  const url = await prisma.url.update({
+    where: {
+      id: id,
+    },
+    data: {
+      shortUrl: newShortUrl,
+      originalUrl: newOriginalUrl,
+      user: {
+        connect: {
+          id: user?.id,
         },
-      });
-    }
-    const url = await prisma.url.update({
-      where: {
-        id,
       },
-      data: {
-        originalUrl: newUrl,
-      },
-    });
-
-    res.status(201).json(url);
-  } catch (e) {
-    res.status(500).json({
-      error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Something Went Wrong",
-      },
-    });
-  }
+    },
+    include: {
+      user: true,
+    },
+  });
+  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 }
 
 export async function deleteUrl(req: AuthenticatedRequest, res: Response) {
@@ -180,7 +163,7 @@ export async function deleteUrl(req: AuthenticatedRequest, res: Response) {
         id,
       },
     });
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   } catch (e) {
     res.status(500).json({
       error: {
@@ -192,11 +175,11 @@ export async function deleteUrl(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function redirectUrl(req: Request, res: Response) {
-  const id = String(req.params.id);
+  const shortUrl = String(req.params.id);
 
   const url = await prisma.url.findUnique({
     where: {
-      id,
+      shortUrl: shortUrl
     },
   });
 

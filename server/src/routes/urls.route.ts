@@ -16,7 +16,7 @@ urlRouter.post("/urls", requireAuth, urlController.urls);
 /**
  * GET /api/v1/urls/:id --> to get an already created shortUrl
  */
-urlRouter.get("/urls/:id", urlController.getUrl);
+urlRouter.get("/urls/:id", requireAuth, urlController.getUrl);
 
 /**
  * GET /api/v1/urls --> to get all urls with pagination feature
@@ -24,11 +24,11 @@ urlRouter.get("/urls/:id", urlController.getUrl);
 urlRouter.get("/urls", requireAuth, urlController.getUrls);
 
 /**
- * PATCH /api/v1/urls/:id --> to update existing url
+ * POST /api/v1/urls/:id --> to update existing url
  */
-urlRouter.patch(
+urlRouter.post(
   "/urls/:id",
-  validateUrl(createUrlSchema),
+  requireAuth,
   urlController.updateUrl,
 );
 
