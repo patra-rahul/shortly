@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 const CreateUrl = () => {
   const [name, setName] = useState(null);
   const [dialog, setDialog] = useState(false);
+
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
   useEffect(() => {
     async function loadUser() {
       try {
@@ -19,6 +22,23 @@ const CreateUrl = () => {
     }
     loadUser();
   });
+
+  async function createUrl() {
+    try {
+      await axios.post(
+        `http://localhost:3000/api/v1/urls`,
+        {
+          shortUrl: shortUrl,
+          originalUrl: originalUrl,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
   return (
     <>
       <div className="flex m-4 p-4">
@@ -38,8 +58,11 @@ const CreateUrl = () => {
       {dialog && (
         <form
           className="flex flex-col bg-gray-100 w-full m-4 p-10 rounded-lg h-full font-secondary gap-y-5"
-          action="http://localhost:3000/api/v1/urls"
-          method="post"
+          onSubmit={(e) => {
+            e.preventDefault();
+            createUrl();
+            setDialog(!dialog);
+          }}
         >
           <div>
             <h1 className="text-2xl font-extrabold">Shorten a long link</h1>
@@ -53,15 +76,20 @@ const CreateUrl = () => {
               className="px-4 py-2 bg-white text-black rounded-md w-2/3"
               placeholder="https://www.yourboringlonglink.com/pages"
               required
-              name="originalUrl"
+              value={originalUrl}
+              onChange={(e) => setOriginalUrl(e.target.value)}
             />
             <input
               type="text"
               className="px-4 py-2 bg-white text-black w-1/3 rounded-md"
               placeholder="suggest short url (optional)"
-              name="shortUrl"
+              value={shortUrl}
+              onChange={(e) => setShortUrl(e.target.value)}
             />
-            <button className="bg-black text-white px-4 py-2 rounded-md w-1/3 font-secondary">
+            <button
+              type="button"
+              className="bg-black text-white px-4 py-2 rounded-md w-1/3 font-secondary"
+            >
               Auto Generate
             </button>
           </div>

@@ -9,7 +9,7 @@ type Item = {
 
 const ShowUrls = () => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [urls, setUrls] = useState<Item[]>([]);
 
@@ -31,7 +31,7 @@ const ShowUrls = () => {
       setUrls(currentItems);
     }
     getUrls();
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, urls, editForm]);
 
   async function deleteUrl(id: string) {
     try {
@@ -42,6 +42,27 @@ const ShowUrls = () => {
       setUrls((currentUrls) => currentUrls.filter((url) => url.id !== id));
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async function updateUrl(
+    id: string,
+    newShortUrl: string,
+    newOriginalUrl: string,
+  ) {
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/v1/urls/${id}`,
+        {
+          newShortUrl: newShortUrl,
+          newOriginalUrl: newOriginalUrl,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -68,8 +89,11 @@ const ShowUrls = () => {
               {/** Edit Form */}
               {editForm === item.id && (
                 <form
-                  action={`http://localhost:3000/api/v1/urls/${item.id}`}
-                  method="post"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    updateUrl(item.id, shortUrl, originalUrl);
+                    setEditForm(null)
+                  }}
                   className="flex flex-col bg-gray-100 w-full m-4 p-10 rounded-lg h-full font-secondary gap-y-5"
                 >
                   <div>
@@ -86,7 +110,6 @@ const ShowUrls = () => {
                       className="px-4 py-2 bg-white text-black rounded-md w-2/3"
                       placeholder="https://www.yourboringlonglink.com/pages"
                       required
-                      name="newOriginalUrl"
                       value={originalUrl}
                       onChange={(e) => setOriginalUrl(e.target.value)}
                     />
@@ -94,7 +117,7 @@ const ShowUrls = () => {
                       type="text"
                       className="px-4 py-2 bg-white text-black w-1/3 rounded-md"
                       placeholder="suggest short url (optional)"
-                      name="newShortUrl"
+                      required
                       value={shortUrl}
                       onChange={(e) => setShortUrl(e.target.value)}
                     />
@@ -166,8 +189,8 @@ const ShowUrls = () => {
         <button
           className="bg-blue-700 text-white font-secondary px-4 py-2"
           onClick={() => {
-            if (currentPage <= totalPages-2){
-            setCurrentPage(currentPage + 1);
+            if (currentPage <= totalPages - 2) {
+              setCurrentPage(currentPage + 1);
             }
           }}
         >
