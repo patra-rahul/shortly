@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { redirectUrl } from "../controllers/urls.controller";
+import { redirectUrl } from "../controllers/app.controller";
 
 const serviceRouter = Router();
 

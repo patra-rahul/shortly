@@ -10,7 +10,10 @@ export async function urls(req: AuthenticatedRequest, res: Response) {
   try {
     const user = req.currentUser;
     const { shortUrl, originalUrl } = req.body;
-    const code = shortUrl ?? generateShortCode();
+    if (!shortUrl){
+      const code = generateShortCode();
+    }
+    const code = shortUrl;
     const url = await prisma.url.create({
       data: {
         id: code,
@@ -26,7 +29,6 @@ export async function urls(req: AuthenticatedRequest, res: Response) {
         user: true,
       },
     });
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -103,13 +105,24 @@ export async function getUrls(req: AuthenticatedRequest, res: Response) {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
 
-    const urls = await prisma.url.findMany({
-      where: {
-        userId: req.currentUser?.id,
-      },
-      skip: page * limit,
-      take: limit || 10,
-    });
+    const [urls, totalItems] = await Promise.all([
+      prisma.url.findMany({
+        where: {
+          userId: req.currentUser?.id,
+        },
+        skip: page * limit,
+        take: limit || 10,
+        orderBy: {
+          updatedAt: "desc",
+        },
+      }),
+
+      prisma.url.count({
+        where: {
+          userId: req.currentUser?.id,
+        },
+      }),
+    ]);
 
     if (!urls) {
       return res.status(401).json({
@@ -119,7 +132,7 @@ export async function getUrls(req: AuthenticatedRequest, res: Response) {
         },
       });
     }
-    return res.status(200).json({ urls });
+    return res.status(200).json({ urls, totalItems });
   } catch (e) {
     res.status(500).json({
       error: {
@@ -172,20 +185,4 @@ export async function deleteUrl(req: AuthenticatedRequest, res: Response) {
       },
     });
   }
-}
-
-export async function redirectUrl(req: Request, res: Response) {
-  const shortUrl = String(req.params.id);
-
-  const url = await prisma.url.findUnique({
-    where: {
-      shortUrl: shortUrl
-    },
-  });
-
-  if (!url) {
-    return res.status(404);
-  }
-
-  res.redirect(url.originalUrl);
 }

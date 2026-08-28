@@ -1,8 +1,5 @@
 import { Router } from "express";
 import * as urlController from "../controllers/urls.controller";
-
-import { validateUrl } from "../middlewares/validate.middleware";
-import { createUrlSchema } from "../utils/createUrlSchema";
 import { requireAuth } from "../middlewares/authorization.middleware";
 
 const urlRouter = Router();
@@ -24,9 +21,9 @@ urlRouter.get("/urls/:id", requireAuth, urlController.getUrl);
 urlRouter.get("/urls", requireAuth, urlController.getUrls);
 
 /**
- * POST /api/v1/urls/:id --> to update existing url
+ * PATCH /api/v1/urls/:id --> to update existing url
  */
-urlRouter.post(
+urlRouter.patch(
   "/urls/:id",
   requireAuth,
   urlController.updateUrl,

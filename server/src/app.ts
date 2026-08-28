@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import urlRouter from "./routes/urls.route";
-import serviceRouter from "./services/url.service";
+import serviceRouter from "./services/redirection.service";
 import authRouter from "./routes/auth.route";
 import cors from "cors";
 import cookieParser from "cookie-parser";
