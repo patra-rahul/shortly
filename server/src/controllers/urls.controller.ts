@@ -4,6 +4,7 @@ import { generateShortCode } from "../utils/generateShortCode";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { AuthenticatedRequest } from "../middlewares/authorization.middleware";
 import dotenv from "dotenv";
+import redis from "../../lib/redis";
 dotenv.config;
 
 export async function urls(req: AuthenticatedRequest, res: Response) {
@@ -164,6 +165,8 @@ export async function updateUrl(req: AuthenticatedRequest, res: Response) {
       user: true,
     },
   });
+
+  await redis.del(`url:${url.shortUrl}`);
   res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 }
 
