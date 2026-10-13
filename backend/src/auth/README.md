@@ -1,6 +1,14 @@
 # Auth System
-- **RS256 Asymmetric** has two keys ( private and public ),
-the private key will be used to sign JWTs, while the public key will be used to verify and authorize the user. **HS256 Symmetric** is a single-shared key which compromises security.
+
+RS256 uses a key pair so the backend can sign tokens and Envoy can verify them without receiving the signing secret.
+
+| Comparison | Private key | Public key |
+| --- | --- | --- |
+| Purpose | Signs access and refresh tokens | Verifies token signatures |
+| Location | Backend (`private.pem`); kept secret | Envoy receives it in JWKS format |
+| Reuse | Same key signs tokens for all users | Corresponding key verifies those tokens |
+
+Signing proves authenticity; it does not encrypt the token payload.
 
 - **jose** for JWT signing and JWKS.
 - **argon2** for hashing passwords.

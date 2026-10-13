@@ -5,6 +5,6 @@ const auth = Router();
 
 auth.post('/register', controller.register);
 
-auth.get('/login', controller.login);
+auth.post('/login', controller.login);
 
 export default auth;

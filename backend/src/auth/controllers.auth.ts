@@ -71,4 +71,50 @@ export async function register(req: Request, res: Response) {
   }
 }
 
-export async function login(req: Request, res: Response) {}
+export async function login(req: Request, res: Response) {
+  const { email, password } = req.body ?? {};
+
+  if (
+    typeof email !== "string" ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
+    typeof password !== "string" ||
+    password.length === 0
+  ) {
+    return res.status(400).json({
+      message: "Provide a valid email and password.",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email: email.trim().toLowerCase() })
+      .select("+passwordHash");
+
+    if (!user || !(await argon2.verify(user.passwordHash, password))) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    const userId = user._id.toString();
+    const [accessToken, refreshToken] = await Promise.all([
+      generateAccessToken(userId),
+      generateRefreshToken(userId),
+    ]);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/auth/v1",
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+    });
+    res.setHeader("Cache-Control", "no-store");
+
+    return res.status(200).json({
+      message: "User logged in successfully.",
+      accessToken,
+      user: { id: user._id, email: user.email },
+    });
+  } catch (error) {
+    console.error("User login failed:", error);
+    return res.status(500).json({ message: "Unable to log in." });
+  }
+}
